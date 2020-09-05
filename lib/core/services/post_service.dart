@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fuse/models/post_model.dart';
-import 'package:fuse/models/quote_model.dart';
-import 'package:fuse/services/api_service.dart';
+import 'package:fuse/core/models/post_model.dart';
+import 'package:fuse/core/models/quote_model.dart';
+import 'package:fuse/core/services/api_service.dart';
 
 class PostService {
   final ApiService _apiService;
@@ -12,7 +12,7 @@ class PostService {
 
   final StreamController _streamController = StreamController<List<Post>>();
 
-  List<Post> _posts=[];
+  List<Post> _posts = [];
   List<Quote> _quotes;
   Post _selectedPost;
 
@@ -21,7 +21,6 @@ class PostService {
   get selectedPost => _selectedPost;
 
   get postStream => _streamController.stream;
-
 
   fetchQuotes() {
     _apiService.get().then((value) {

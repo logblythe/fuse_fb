@@ -1,7 +1,7 @@
-import 'package:fuse/models/post_model.dart';
-import 'package:fuse/services/api_service.dart';
-import 'package:fuse/services/navigation_service.dart';
-import 'package:fuse/services/post_service.dart';
+import 'package:fuse/core/models/post_model.dart';
+import 'package:fuse/core/services/api_service.dart';
+import 'package:fuse/core/services/navigation_service.dart';
+import 'package:fuse/core/services/post_service.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 

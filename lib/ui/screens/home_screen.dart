@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fuse/base_widget.dart';
-import 'package:fuse/models/post_model.dart';
-import 'package:fuse/screens/add_post_screen.dart';
-import 'package:fuse/view_models/post_view_model.dart';
-import 'package:fuse/widgets/circle_image.dart';
-import 'package:fuse/widgets/post_card.dart';
+import 'package:fuse/core/models/post_model.dart';
+import 'package:fuse/core/view_models/post_view_model.dart';
+import 'package:fuse/ui/screens/add_post_screen.dart';
+import 'package:fuse/ui/widgets/circle_image.dart';
+import 'package:fuse/ui/widgets/post_card.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,13 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(12),
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: addCard()),
+              SliverToBoxAdapter(child: createPostContainer()),
               StreamBuilder<List<Post>>(
                 stream: model.postsStream,
                 initialData: [],
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    var data =snapshot.data;
+                    var data = snapshot.data;
                     List<Post> _posts = data.reversed.toList();
                     return SliverList(
                       delegate: SliverChildBuilderDelegate(
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  addCard() {
+  Widget createPostContainer() {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),

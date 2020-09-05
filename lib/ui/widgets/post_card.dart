@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fuse/models/post_model.dart';
+import 'package:fuse/core/models/post_model.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 import 'circle_image.dart';
@@ -34,11 +34,11 @@ class _PostCardState extends State<PostCard> {
               [
                 topRow(context),
                 Divider(color: Colors.grey, thickness: 2),
-                message(context)
+                message(context),
               ],
             ),
           ),
-          images(),
+          imagesGridView(),
         ],
       ),
     );
@@ -83,7 +83,7 @@ class _PostCardState extends State<PostCard> {
     );
   }
 
-  Widget images() {
+  Widget imagesGridView() {
     List<dynamic> _images = []
       ..addAll(widget.post?.images?.toList() ?? [])
       ..addAll(widget.post?.imageUrls?.toList() ?? []);

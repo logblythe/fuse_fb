@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fuse/core/services/navigation_service.dart';
 import 'package:fuse/provider_setup.dart';
-import 'package:fuse/screens/home_screen.dart';
-import 'package:fuse/services/navigation_service.dart';
+import 'package:fuse/ui/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {

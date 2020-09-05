@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fuse/models/post_model.dart';
-import 'package:fuse/services/navigation_service.dart';
-import 'package:fuse/services/post_service.dart';
-import 'package:fuse/view_models/base_view_model.dart';
+import 'package:fuse/core/models/post_model.dart';
+import 'package:fuse/core/services/navigation_service.dart';
+import 'package:fuse/core/services/post_service.dart';
+import 'package:fuse/core/view_models/base_view_model.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class PostViewModel extends BaseViewModel {
@@ -22,8 +22,7 @@ class PostViewModel extends BaseViewModel {
   List<Asset> get selectedImages => _selectedImages;
 
   void addPost(Post post) {
-    post.images = selectedImages;
-    postService.addPost(post);
+    postService.addPost(post..images = selectedImages);
     navigationService.goBack();
   }
 
@@ -32,7 +31,7 @@ class PostViewModel extends BaseViewModel {
   }
 
   void updatePost(Post updatedPost) {
-    postService.updatePost(updatedPost);
+    postService.updatePost(updatedPost..images = selectedImages);
   }
 
   void goBack() => navigationService.goBack();
@@ -40,13 +39,13 @@ class PostViewModel extends BaseViewModel {
   void fetchQuotes() => postService.fetchQuotes();
 
   addImages(List<Asset> assets) {
+    selectedImages.clear();
     selectedImages.addAll(assets);
     notifyListeners();
   }
 
-// @override
-// void dispose() {
-//   postService.clearSelectedPost();
-//   super.dispose();
-// }
+  void removeSelectedImage(int index) {
+    selectedImages.removeAt(index);
+    notifyListeners();
+  }
 }

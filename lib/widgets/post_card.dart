@@ -84,69 +84,53 @@ class _PostCardState extends State<PostCard> {
   }
 
   Widget images() {
-    List<Asset> imageAssets = widget.post.images;
-    List<String> imageUrls = widget.post.imageUrls;
-    int assetCount = imageAssets?.length ?? 0;
-    int urlCount = imageUrls?.length ?? 0;
-
-    if (assetCount > 0) {
-      return assetCount == 1
-          ? SliverToBoxAdapter(
-              child: AssetThumb(
-                height: 200,
-                width: 300,
-                asset: imageAssets.elementAt(0),
-                spinner: Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          : SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    Asset asset = imageAssets[index];
-                    return AssetThumb(
+    List<dynamic> _images = []
+      ..addAll(widget.post?.images?.toList() ?? [])
+      ..addAll(widget.post?.imageUrls?.toList() ?? []);
+    if (_images.length == 0) {
+      return SliverToBoxAdapter(
+        child: Container(),
+      );
+    } else if (_images.length == 1) {
+      if (_images[0] is String) {
+        return SliverToBoxAdapter(child: Image.network(_images[0]));
+      } else {
+        return SliverToBoxAdapter(
+          child: AssetThumb(
+            height: 200,
+            width: 300,
+            asset: _images[0],
+            spinner: Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        );
+      }
+    } else {
+      return SliverPadding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverGrid(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              return (_images[index] is String)
+                  ? Image.network(_images[index])
+                  : AssetThumb(
                       height: 200,
                       width: 300,
-                      asset: imageAssets.elementAt(index),
+                      asset: _images[index],
                       spinner: Center(
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     );
-                  },
-                  childCount: assetCount,
-                ),
-              ),
-            );
-    } else if (urlCount > 0) {
-      return urlCount == 1
-          ? SliverToBoxAdapter(child: Image.network(imageUrls[0]))
-          : SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return Image.network(imageUrls[index]);
-                  },
-                  childCount: urlCount,
-                ),
-              ),
-            );
-    } else {
-      return SliverToBoxAdapter(
-        child: Container(),
+            },
+            childCount: _images.length,
+          ),
+        ),
       );
     }
   }

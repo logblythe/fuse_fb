@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
       ),
       onModelReady: (model) {
         model.fetchQuotes();
-        initListener(model);
+        _initListener(model);
       },
       builder: (context, model, child) {
         return Container(
@@ -44,41 +44,9 @@ class HomeScreen extends StatelessWidget {
                   if (snapshot.data.isNotEmpty) {
                     var data = snapshot.data;
                     List<Post> _posts = data;
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return Column(
-                            children: [
-                              PostCard(
-                                post: _posts.elementAt(index),
-                                onPostSelect: () => _handlePostSelect(
-                                    model, _posts.elementAt(index)),
-                              ),
-                              index == _posts.length - 1
-                                  ? Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 16.0),
-                                      child: index == 199
-                                          ? Text(
-                                              "Reached end of the list i.e $TOTAL_SIZE items")
-                                          : CircularProgressIndicator(),
-                                    )
-                                  : Container(),
-                            ],
-                          );
-                        },
-                        childCount: _posts.length,
-                      ),
-                    );
+                    return buildList(_posts, model);
                   } else {
-                    return SliverList(
-                      delegate: SliverChildListDelegate([
-                        SizedBox(height: 24),
-                        Center(child: CircularProgressIndicator()),
-                        SizedBox(height: 24),
-                        Center(child: Text('Please wait, fetching the posts')),
-                      ]),
-                    );
+                    return buildLoading();
                   }
                 },
               )
@@ -120,6 +88,47 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget buildList(List<Post> posts, PostViewModel model) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return Column(
+            children: [
+              PostCard(
+                post: posts.elementAt(index),
+                onPostSelect: () =>
+                    _handlePostSelect(model, posts.elementAt(index)),
+              ),
+              index == posts.length - 1
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: index == TOTAL_SIZE - 1
+                          ? Text(
+                              "Reached end of the list i.e $TOTAL_SIZE items")
+                          : CircularProgressIndicator(),
+                    )
+                  : Container(),
+            ],
+          );
+        },
+        childCount: posts.length,
+      ),
+    );
+  }
+
+  Widget buildLoading() {
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        [
+          SizedBox(height: 24),
+          Center(child: CircularProgressIndicator()),
+          SizedBox(height: 24),
+          Center(child: Text('Please wait, fetching the posts')),
+        ],
+      ),
+    );
+  }
+
   _handleCreatePost(PostViewModel model) {
     model.selectPost(null);
   }
@@ -128,7 +137,7 @@ class HomeScreen extends StatelessWidget {
     model.selectPost(post);
   }
 
-  void initListener(PostViewModel model) {
+  _initListener(PostViewModel model) {
     _scrollController.addListener(
       () {
         if (_scrollController.position.pixels ==

@@ -110,18 +110,36 @@ class PostCard extends StatelessWidget {
           ),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return (_images[index] is String)
-                  ? Image.network(_images[index])
-                  : AssetThumb(
-                      height: 200,
-                      width: 300,
-                      asset: _images[index],
-                      spinner: Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    );
+              return Stack(
+                children: [
+                  (_images[index] is String)
+                      ? Image.network(_images[index])
+                      : AssetThumb(
+                          height: 200,
+                          width: 300,
+                          asset: _images[index],
+                          spinner: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                  _images.length > 4 && index == 3
+                      ? InkWell(
+                          onTap: onPostSelect,
+                          child: Container(
+                            color: Colors.black.withOpacity(0.5),
+                            child: Center(
+                              child: Text(
+                                'View more',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(),
+                ],
+              );
             },
-            childCount: _images.length,
+            childCount: _images.length > 4 ? 4 : _images.length,
           ),
         ),
       );

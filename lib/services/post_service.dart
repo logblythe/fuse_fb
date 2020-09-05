@@ -1,13 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:fuse/models/post_model.dart';
+import 'package:fuse/models/quote_model.dart';
+import 'package:fuse/services/api_service.dart';
 
 class PostService {
-  PostService();
+  final ApiService _apiService;
 
-  final List<Post> _posts = [];
+  PostService({@required ApiService api}) : this._apiService = api;
+
   final StreamController _streamController = StreamController<List<Post>>();
 
+  List<Post> _posts;
+  List<Quote> _quotes;
   Post _selectedPost;
 
   get posts => _posts;
@@ -16,10 +22,34 @@ class PostService {
 
   get postStream => _streamController.stream;
 
+  fetchQuotes() {
+    _apiService.get().then((value) {
+      List<Quote> quotes = List.from(value.map((it) => Quote.fromJson(it)));
+      _quotes = quotes.sublist(0, 50);
+      _posts = _quotes.asMap().entries.map(
+        (e) {
+          int index = e.key;
+          Quote quote = e.value;
+          List<String> imageUrls = [];
+          if (index <= 8) {
+            for (int i = 0; i < index; i++) {
+              imageUrls.add("https://picsum.photos/300");
+            }
+          } else {
+            for (int i = 0; i < index % 4; i++) {
+              imageUrls.add("https://picsum.photos/300");
+            }
+          }
+          return Post(message: quote.quote, imageUrls: imageUrls);
+        },
+      ).toList();
+      _streamController.sink.add(_posts);
+    });
+  }
+
   addPost(Post post) {
     _posts.add(post);
     _streamController.sink.add(_posts);
-    print('Posts length ${_posts.length}');
   }
 
   selectPost(post) {

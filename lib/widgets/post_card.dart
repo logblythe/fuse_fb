@@ -38,47 +38,7 @@ class _PostCardState extends State<PostCard> {
               ],
             ),
           ),
-          widget.post.images != null && widget.post.images.length > 0
-              ? widget.post.images.length == 1
-                  ? SliverToBoxAdapter(
-                      child: AssetThumb(
-                        height: 200,
-                        width: 300,
-                        asset: widget.post.images.elementAt(0),
-                        spinner: Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    )
-                  : SliverPadding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverGrid(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 1.5,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
-                            Asset asset = widget.post.images[index];
-                            return AssetThumb(
-                              asset: asset,
-                              width: 300,
-                              height: 100,
-                              spinner: Center(
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            );
-                          },
-                          childCount: widget.post.images.length,
-                        ),
-                      ),
-                    )
-              : SliverToBoxAdapter(
-                  child: Container(),
-                ),
+          images(),
         ],
       ),
     );
@@ -121,5 +81,73 @@ class _PostCardState extends State<PostCard> {
         ],
       ),
     );
+  }
+
+  Widget images() {
+    List<Asset> imageAssets = widget.post.images;
+    List<String> imageUrls = widget.post.imageUrls;
+    int assetCount = imageAssets?.length ?? 0;
+    int urlCount = imageUrls?.length ?? 0;
+
+    if (assetCount > 0) {
+      return assetCount == 1
+          ? SliverToBoxAdapter(
+              child: AssetThumb(
+                height: 200,
+                width: 300,
+                asset: imageAssets.elementAt(0),
+                spinner: Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            )
+          : SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    Asset asset = imageAssets[index];
+                    return AssetThumb(
+                      height: 200,
+                      width: 300,
+                      asset: imageAssets.elementAt(index),
+                      spinner: Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    );
+                  },
+                  childCount: assetCount,
+                ),
+              ),
+            );
+    } else if (urlCount > 0) {
+      return urlCount == 1
+          ? SliverToBoxAdapter(child: Image.network(imageUrls[0]))
+          : SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return Image.network(imageUrls[index]);
+                  },
+                  childCount: urlCount,
+                ),
+              ),
+            );
+    } else {
+      return SliverToBoxAdapter(
+        child: Container(),
+      );
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:fuse/models/post_model.dart';
+import 'package:fuse/services/api_service.dart';
 import 'package:fuse/services/navigation_service.dart';
 import 'package:fuse/services/post_service.dart';
 import 'package:provider/provider.dart';
@@ -12,10 +13,16 @@ List<SingleChildWidget> providers = [
 
 List<SingleChildWidget> independentServices = [
   Provider.value(value: NavigationService()),
-  Provider.value(value: PostService()),
+  Provider.value(value: ApiService()),
 ];
 
-List<SingleChildWidget> dependentServices = [];
+List<SingleChildWidget> dependentServices = [
+  ProxyProvider<ApiService, PostService>(
+    update: (context, apiService, postService) {
+      return PostService(api: apiService);
+    },
+  ),
+];
 
 List<SingleChildWidget> uiConsumableProviders = [
   StreamProvider<List<Post>>(

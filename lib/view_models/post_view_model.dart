@@ -31,6 +31,8 @@ class PostViewModel extends BaseViewModel {
 
   void goBack() => navigationService.goBack();
 
+  void fetchQuotes() => postService.fetchQuotes();
+
   @override
   void dispose() {
     postService.clearSelectedPost();

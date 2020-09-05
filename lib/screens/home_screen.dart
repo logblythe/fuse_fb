@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       onModelReady: (model) {
         _postVm = model;
+        _postVm.fetchQuotes();
       },
       builder: (context, model, child) {
         return Container(

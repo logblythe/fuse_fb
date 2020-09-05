@@ -30,7 +30,7 @@ class PostService {
         (e) {
           int index = e.key;
           Quote quote = e.value;
-          List<String> imageUrls = [];
+          List<dynamic> imageUrls = [];
           if (index <= 8) {
             for (int i = 0; i < index; i++) {
               imageUrls.add("https://picsum.photos/300");
@@ -40,7 +40,7 @@ class PostService {
               imageUrls.add("https://picsum.photos/300");
             }
           }
-          return Post(message: quote.quote, imageUrls: imageUrls);
+          return Post(message: quote.quote, imageList: imageUrls);
         },
       ).toList();
       _streamController.sink.add(_posts);

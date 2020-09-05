@@ -4,17 +4,12 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 
 import 'circle_image.dart';
 
-class PostCard extends StatefulWidget {
+class PostCard extends StatelessWidget {
   final Post post;
   final Function() onPostSelect;
 
   const PostCard({Key key, this.post, this.onPostSelect}) : super(key: key);
 
-  @override
-  _PostCardState createState() => _PostCardState();
-}
-
-class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,11 +40,11 @@ class _PostCardState extends State<PostCard> {
   }
 
   Widget message(BuildContext context) {
-    return widget.post.message.isNotEmpty
+    return post.message.isNotEmpty
         ? Padding(
             padding: const EdgeInsets.all(20.0),
             child: Text(
-              widget.post.message,
+              post.message,
               style:
                   Theme.of(context).textTheme.bodyText1.copyWith(fontSize: 16),
             ),
@@ -76,7 +71,7 @@ class _PostCardState extends State<PostCard> {
           ),
           IconButton(
             icon: Icon(Icons.edit),
-            onPressed: widget.onPostSelect,
+            onPressed: onPostSelect,
           ),
         ],
       ),
@@ -84,9 +79,7 @@ class _PostCardState extends State<PostCard> {
   }
 
   Widget imagesGridView() {
-    List<dynamic> _images = []
-      ..addAll(widget.post?.images?.toList() ?? [])
-      ..addAll(widget.post?.imageUrls?.toList() ?? []);
+    List<dynamic> _images = post.imageList ?? [];
     if (_images.length == 0) {
       return SliverToBoxAdapter(
         child: Container(),

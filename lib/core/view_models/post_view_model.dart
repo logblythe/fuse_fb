@@ -3,7 +3,6 @@ import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/services/navigation_service.dart';
 import 'package:fuse/core/services/post_service.dart';
 import 'package:fuse/core/view_models/base_view_model.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
 class PostViewModel extends BaseViewModel {
   final PostService postService;
@@ -22,15 +21,11 @@ class PostViewModel extends BaseViewModel {
   List<dynamic> get selectedImages => _selectedImages;
 
   onInit() {
-    _selectedImages
-      ..addAll(selectedPost?.images?.toList() ?? [])
-      ..addAll(selectedPost?.imageUrls?.toList() ?? []);
+    _selectedImages..addAll(selectedPost?.imageList ?? []);
   }
 
   void addPost(Post post) {
-    postService.addPost(post
-      ..images = List.from(
-          selectedImages.where((element) => element is Asset).toList()));
+    postService.addPost(post..imageList = selectedImages);
     navigationService.goBack();
   }
 
@@ -39,9 +34,7 @@ class PostViewModel extends BaseViewModel {
   }
 
   void updatePost(Post updatedPost) {
-    postService.updatePost(updatedPost
-      ..images = List.from(
-          selectedImages.where((element) => element is Asset).toList()));
+    postService.updatePost(updatedPost..imageList = selectedImages);
   }
 
   void fetchQuotes() => postService.fetchQuotes();

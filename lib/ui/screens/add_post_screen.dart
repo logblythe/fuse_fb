@@ -12,7 +12,7 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   final _controller = TextEditingController();
-  List<Asset> images = List<Asset>();
+  List<dynamic> images = List<dynamic>();
   bool _enablePosting = false;
   bool _editMode = false;
   PostViewModel _postVm;
@@ -30,7 +30,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _editMode = _postVm.selectedPost != null;
         if (_editMode) {
           _controller.text = _postVm.selectedPost.message;
-          images = _postVm.selectedPost.images;
+          images = _postVm.selectedPost.imageList;
         }
       },
       builder: (context, model, child) {
@@ -175,7 +175,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void _handlePost() {
-    Post _post = Post(message: _controller.text, images: images);
+    Post _post = Post(message: _controller.text, imageList: images);
     if (_editMode) {
       _postVm.updatePost(_post);
       _postVm.goBack();

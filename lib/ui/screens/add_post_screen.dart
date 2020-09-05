@@ -26,6 +26,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       ),
       onModelReady: (model) {
         _postVm = model;
+        _postVm.onInit();
         _editMode = _postVm.selectedPost != null;
         if (_editMode) {
           _controller.text = _postVm.selectedPost.message;
@@ -95,14 +96,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   Widget buildGridView() {
-    List<dynamic> _images;
-    if (_postVm.selectedImages.length > 0) {
-      _images = _postVm.selectedImages;
-    } else {
-      _images = []
-        ..addAll(_postVm.selectedPost?.images?.toList() ?? [])
-        ..addAll(_postVm.selectedPost?.imageUrls?.toList() ?? []);
-    }
+    List<dynamic> _images = _postVm.selectedImages;
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverGrid.count(
@@ -146,13 +140,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   Future<void> _loadAssets() async {
     List<Asset> resultList = List<Asset>();
+    List<Asset> pickedImages = List.from(
+        _postVm.selectedImages.where((element) => element is Asset).toList());
     String error = 'No Error Detected';
 
     try {
       resultList = await MultiImagePicker.pickImages(
         maxImages: 300,
         enableCamera: true,
-        selectedAssets: _postVm.selectedImages,
+        selectedAssets: pickedImages,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
           actionBarColor: "#2196F3",
@@ -169,8 +165,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
 
     if (!mounted) return;
-
-    _postVm.addImages(resultList);
+    if (resultList.isNotEmpty) {
+      _postVm.addSelectedImages(resultList);
+    }
     setState(() {
       _enablePosting =
           resultList.length > 0 ? true : _controller.text.isNotEmpty;

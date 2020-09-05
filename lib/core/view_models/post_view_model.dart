@@ -11,7 +11,7 @@ class PostViewModel extends BaseViewModel {
 
   PostViewModel({@required this.postService, @required this.navigationService});
 
-  List<Asset> _selectedImages = [];
+  List<dynamic> _selectedImages = [];
 
   List<Post> get posts => postService.posts;
 
@@ -19,10 +19,18 @@ class PostViewModel extends BaseViewModel {
 
   Stream<List<Post>> get postsStream => postService.postStream;
 
-  List<Asset> get selectedImages => _selectedImages;
+  List<dynamic> get selectedImages => _selectedImages;
+
+  onInit() {
+    _selectedImages
+      ..addAll(selectedPost?.images?.toList() ?? [])
+      ..addAll(selectedPost?.imageUrls?.toList() ?? []);
+  }
 
   void addPost(Post post) {
-    postService.addPost(post..images = selectedImages);
+    postService.addPost(post
+      ..images = List.from(
+          selectedImages.where((element) => element is Asset).toList()));
     navigationService.goBack();
   }
 
@@ -31,14 +39,14 @@ class PostViewModel extends BaseViewModel {
   }
 
   void updatePost(Post updatedPost) {
-    postService.updatePost(updatedPost..images = selectedImages);
+    postService.updatePost(updatedPost
+      ..images = List.from(
+          selectedImages.where((element) => element is Asset).toList()));
   }
-
-  void goBack() => navigationService.goBack();
 
   void fetchQuotes() => postService.fetchQuotes();
 
-  addImages(List<Asset> assets) {
+  addSelectedImages(List<dynamic> assets) {
     selectedImages.clear();
     selectedImages.addAll(assets);
     notifyListeners();
@@ -48,4 +56,6 @@ class PostViewModel extends BaseViewModel {
     selectedImages.removeAt(index);
     notifyListeners();
   }
+
+  void goBack() => navigationService.goBack();
 }

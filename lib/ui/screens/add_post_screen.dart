@@ -30,10 +30,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _editMode = _postVm.selectedPost != null;
         if (_editMode) {
           _controller.text = _postVm.selectedPost.message;
-          images = _postVm.selectedImages;
         }
       },
       builder: (context, model, child) {
+        images = _postVm.selectedImages;
         return Scaffold(
           appBar: AppBar(
             title: Text('${_editMode ? 'Edit' : 'Add'} post'),

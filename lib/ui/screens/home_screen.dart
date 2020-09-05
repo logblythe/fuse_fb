@@ -3,58 +3,76 @@ import 'package:flutter/rendering.dart';
 import 'package:fuse/base_widget.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/view_models/post_view_model.dart';
-import 'package:fuse/ui/screens/add_post_screen.dart';
 import 'package:fuse/ui/widgets/circle_image.dart';
 import 'package:fuse/ui/widgets/post_card.dart';
+import 'package:fuse/utils/utilities.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  PostViewModel _postVm;
+class HomeScreen extends StatelessWidget {
+  final _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('My Facebook')),
-      body: _body(),
+      body: _body(context),
     );
   }
 
-  Widget _body() {
+  Widget _body(BuildContext context) {
     return BaseWidget<PostViewModel>(
       model: PostViewModel(
         navigationService: Provider.of(context),
         postService: Provider.of(context),
       ),
       onModelReady: (model) {
-        _postVm = model;
-        _postVm.fetchQuotes();
+        model.fetchQuotes();
+        _scrollController.addListener(
+          () {
+            if (_scrollController.position.pixels ==
+                _scrollController.position.maxScrollExtent) {
+              Future.delayed(Duration(seconds: 3))
+                  .then((value) => model.loadPostFromCache());
+            }
+          },
+        );
       },
       builder: (context, model, child) {
         return Container(
           color: Colors.grey.withOpacity(0.2),
           padding: const EdgeInsets.all(12),
           child: CustomScrollView(
+            controller: _scrollController,
             slivers: [
-              SliverToBoxAdapter(child: createPostContainer()),
+              SliverToBoxAdapter(child: createPostContainer(context, model)),
               StreamBuilder<List<Post>>(
                 stream: model.postsStream,
                 initialData: [],
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     var data = snapshot.data;
-                    List<Post> _posts = data.reversed.toList();
+                    List<Post> _posts = data;
                     return SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          return PostCard(
-                            post: _posts.elementAt(index),
-                            onPostSelect: () =>
-                                _handlePostSelect(_posts.elementAt(index)),
+                          return Column(
+                            children: [
+                              PostCard(
+                                post: _posts.elementAt(index),
+                                onPostSelect: () => _handlePostSelect(
+                                    model, _posts.elementAt(index)),
+                              ),
+                              index == _posts.length - 1
+                                  ? Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 16.0),
+                                      child: index == 199
+                                          ? Text(
+                                              "Reached end of the list i.e $TOTAL_SIZE items")
+                                          : CircularProgressIndicator(),
+                                    )
+                                  : Container(),
+                            ],
                           );
                         },
                         childCount: _posts.length,
@@ -71,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget createPostContainer() {
+  Widget createPostContainer(BuildContext context, PostViewModel model) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -86,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(width: 24),
           Expanded(
             child: InkWell(
-              onTap: _handleCreatePost,
+              onTap: () => _handleCreatePost(model),
               child: TextField(
                 enabled: false,
                 decoration: InputDecoration(
@@ -102,17 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _handleCreatePost() {
-    _postVm.selectPost(null);
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return AddPostScreen();
-    }));
+  _handleCreatePost(PostViewModel model) {
+    model.selectPost(null);
   }
 
-  _handlePostSelect(Post post) {
-    _postVm.selectPost(post);
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return AddPostScreen();
-    }));
+  _handlePostSelect(PostViewModel model, Post post) {
+    model.selectPost(post);
   }
 }

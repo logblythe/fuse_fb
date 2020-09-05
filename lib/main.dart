@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fuse/core/services/navigation_service.dart';
 import 'package:fuse/provider_setup.dart';
+import 'package:fuse/router.dart';
 import 'package:fuse/ui/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    MyApp(),
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,15 +15,14 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: providers,
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Fuse',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         navigatorKey: navigatorKey,
-        home: Scaffold(
-          body: HomeScreen(),
-        ),
+        onGenerateRoute: (settings) => Router.generateRoute(settings),
+        home: HomeScreen(),
       ),
     );
   }

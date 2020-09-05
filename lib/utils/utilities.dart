@@ -1,3 +1,5 @@
+int TOTAL_SIZE = 200;
+
 bool areListsEqual(var list1, var list2) {
   // check if both are lists
   if (!(list1 is List && list2 is List)

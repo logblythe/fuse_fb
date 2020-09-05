@@ -3,6 +3,7 @@ import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/services/navigation_service.dart';
 import 'package:fuse/core/services/post_service.dart';
 import 'package:fuse/core/view_models/base_view_model.dart';
+import 'package:fuse/router.dart';
 
 class PostViewModel extends BaseViewModel {
   final PostService postService;
@@ -30,6 +31,7 @@ class PostViewModel extends BaseViewModel {
 
   void selectPost(Post post) {
     postService.selectPost(post);
+    navigationService.navigateTo(RoutePaths.POST_DETAILS);
   }
 
   void updatePost(Post updatedPost) {
@@ -53,4 +55,6 @@ class PostViewModel extends BaseViewModel {
   }
 
   void goBack() => navigationService.goBack();
+
+  void loadPostFromCache() => postService.loadPostFromCache();
 }

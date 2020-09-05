@@ -27,15 +27,7 @@ class HomeScreen extends StatelessWidget {
       ),
       onModelReady: (model) {
         model.fetchQuotes();
-        _scrollController.addListener(
-          () {
-            if (_scrollController.position.pixels ==
-                _scrollController.position.maxScrollExtent) {
-              Future.delayed(Duration(seconds: 3))
-                  .then((value) => model.loadPostFromCache());
-            }
-          },
-        );
+        initListener(model);
       },
       builder: (context, model, child) {
         return Container(
@@ -49,7 +41,7 @@ class HomeScreen extends StatelessWidget {
                 stream: model.postsStream,
                 initialData: [],
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.data.isNotEmpty) {
                     var data = snapshot.data;
                     List<Post> _posts = data;
                     return SliverList(
@@ -78,8 +70,16 @@ class HomeScreen extends StatelessWidget {
                         childCount: _posts.length,
                       ),
                     );
+                  } else {
+                    return SliverList(
+                      delegate: SliverChildListDelegate([
+                        SizedBox(height: 24),
+                        Center(child: CircularProgressIndicator()),
+                        SizedBox(height: 24),
+                        Center(child: Text('Please wait, fetching the posts')),
+                      ]),
+                    );
                   }
-                  return Container();
                 },
               )
             ],
@@ -126,5 +126,17 @@ class HomeScreen extends StatelessWidget {
 
   _handlePostSelect(PostViewModel model, Post post) {
     model.selectPost(post);
+  }
+
+  void initListener(PostViewModel model) {
+    _scrollController.addListener(
+      () {
+        if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+          Future.delayed(Duration(seconds: 3))
+              .then((value) => model.loadPostFromCache());
+        }
+      },
+    );
   }
 }

@@ -26,7 +26,6 @@ class PostViewModel extends BaseViewModel {
 
   void addPost(Post post) {
     postService.addPost(post..imageList = selectedImages);
-    navigationService.goBack();
   }
 
   void selectPost(Post post) {
@@ -34,7 +33,10 @@ class PostViewModel extends BaseViewModel {
   }
 
   void updatePost(Post updatedPost) {
-    postService.updatePost(updatedPost..imageList = selectedImages);
+    updatedPost.imageList = selectedImages;
+    if (updatedPost != selectedPost) {
+      postService.updatePost(updatedPost);
+    }
   }
 
   void fetchQuotes() => postService.fetchQuotes();

@@ -179,13 +179,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
     Post _post = Post(message: _controller.text);
     if (_editMode) {
       _postVm.updatePost(_post);
-      _postVm.goBack();
-/*      if (_post != _postVm.selectedPost) {
-        _postVm.updatePost(_post);
-      }*/
     } else {
       _postVm.addPost(_post);
     }
+    _postVm.goBack();
   }
 
   void _handleRemoveAsset(int index) {

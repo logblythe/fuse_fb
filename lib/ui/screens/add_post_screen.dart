@@ -30,7 +30,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _editMode = _postVm.selectedPost != null;
         if (_editMode) {
           _controller.text = _postVm.selectedPost.message;
-          images = _postVm.selectedPost.imageList;
+          images = _postVm.selectedImages;
         }
       },
       builder: (context, model, child) {
@@ -80,7 +80,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
             hintStyle: Theme.of(context).textTheme.headline6,
           ),
           onChanged: (value) {
-            if (value.isEmpty && _postVm.selectedImages.length == 0) {
+            if (value.isEmpty && images.length == 0) {
               setState(() {
                 _enablePosting = false;
               });
@@ -96,7 +96,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   Widget buildGridView() {
-    List<dynamic> _images = _postVm.selectedImages;
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverGrid.count(
@@ -104,14 +103,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
         children: List.generate(
-          _images.length,
+          images.length,
           (index) {
             return Stack(
               children: [
-                _images[index] is String
-                    ? Image.network(_images[index])
+                images[index] is String
+                    ? Image.network(images[index])
                     : AssetThumb(
-                        asset: _images[index],
+                        asset: images[index],
                         width: 300,
                         height: 300,
                         spinner: Center(
@@ -140,8 +139,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   Future<void> _loadAssets() async {
     List<Asset> resultList = List<Asset>();
-    List<Asset> pickedImages = List.from(
-        _postVm.selectedImages.where((element) => element is Asset).toList());
+    List<Asset> pickedImages =
+        List.from(images.where((element) => element is Asset).toList());
+    List<String> networkImages =
+        List.from(images.where((element) => element is String).toList());
     String error = 'No Error Detected';
 
     try {
@@ -166,7 +167,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
     if (!mounted) return;
     if (resultList.isNotEmpty) {
-      _postVm.addSelectedImages(resultList);
+      _postVm.addSelectedImages([]..addAll(networkImages)..addAll(resultList));
     }
     setState(() {
       _enablePosting =
@@ -175,7 +176,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void _handlePost() {
-    Post _post = Post(message: _controller.text, imageList: images);
+    Post _post = Post(message: _controller.text);
     if (_editMode) {
       _postVm.updatePost(_post);
       _postVm.goBack();
@@ -190,9 +191,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   void _handleRemoveAsset(int index) {
     _postVm.removeSelectedImage(index);
     setState(() {
-      _enablePosting = _postVm.selectedImages.length > 0
-          ? true
-          : _controller.text.isNotEmpty;
+      _enablePosting = images.length > 0 ? true : _controller.text.isNotEmpty;
     });
   }
 }

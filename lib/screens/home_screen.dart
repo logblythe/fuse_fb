@@ -50,8 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       (context, index) {
                         return PostCard(
                           post: _posts.elementAt(index),
-                          onPostSelect:()=> _handlePostSelect(_posts.elementAt(
-                              index)),
+                          onPostSelect: () =>
+                              _handlePostSelect(_posts.elementAt(index)),
                         );
                       },
                       childCount: _posts.length,
@@ -107,5 +107,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _postVm.selectPost(post);
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return AddPostScreen();
-    }));  }
+    }));
+  }
 }

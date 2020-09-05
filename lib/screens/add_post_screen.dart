@@ -57,6 +57,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _editMode = _postVm.selectedPost != null;
         if (_editMode) {
           _controller.text = _postVm.selectedPost.message;
+          images = _postVm.selectedPost.images;
         }
       },
       builder: (context, model, child) {
@@ -70,25 +71,76 @@ class _AddPostScreenState extends State<AddPostScreen> {
     );
   }
 
-  Widget buildGridView() {
-    return GridView.count(
-      padding: EdgeInsets.all(16),
-      crossAxisCount: 3,
-      children: List.generate(
-        images.length,
-        (index) {
-          Asset asset = images[index];
-          return AssetThumb(
-            spinner: Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-              ),
-            ),
-            asset: asset,
-            width: 300,
-            height: 300,
-          );
+  buildInput() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: TextField(
+        minLines: 5,
+        maxLines: 10,
+        controller: _controller,
+        decoration: InputDecoration(
+            hintText: "What\'s on your mind?",
+            border: const OutlineInputBorder(),
+            hintStyle: Theme.of(context).textTheme.headline6),
+        onChanged: (value) {
+          if (value.isEmpty && images.length == 0) {
+            setState(() {
+              _enablePosting = false;
+            });
+          } else {
+            setState(() {
+              _enablePosting = true;
+            });
+          }
         },
+      ),
+    );
+  }
+
+  Widget buildGridView() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: GridView.count(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        children: List.generate(
+          images.length,
+          (index) {
+            Asset asset = images[index];
+            return Stack(
+              children: [
+                Container(
+                  color: Colors.red,
+                  padding: EdgeInsets.all(0),
+                  child: AssetThumb(
+                    spinner: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                    asset: asset,
+                    width: 300,
+                    height: 300,
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    iconSize: 36,
+                    icon: Icon(Icons.cancel),
+                    color: Colors.white,
+                    onPressed: () {
+                      _handleRemoveAsset(index);
+                    },
+                  ),
+                )
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -133,41 +185,28 @@ class _AddPostScreenState extends State<AddPostScreen> {
     Post _post = Post(message: _controller.text, images: images);
     if (_editMode) {
       _postVm.updatePost(_post);
-
+      _postVm.goBack();
 /*      if (_post != _postVm.selectedPost) {
         _postVm.updatePost(_post);
       }*/
     } else {
       _postVm.addPost(_post);
     }
-
-    // Navigator.pop(context);
   }
 
-  buildInput() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      child: TextField(
-        minLines: 5,
-        maxLines: 10,
-        controller: _controller,
-        decoration: InputDecoration(
-            hintText: "What\'s on your mind?",
-            border: const OutlineInputBorder(),
-            hintStyle: Theme.of(context).textTheme.headline6),
-        onChanged: (value) {
-          if (value.isEmpty && images.length == 0) {
-            setState(() {
-              _enablePosting = false;
-            });
-          } else {
-            setState(() {
-              _enablePosting = true;
-            });
-          }
+  _handleRemoveAsset(int index) {
+    if (!(images.length == 1 && _controller.text.isEmpty)) {
+      setState(
+        () {
+          images.removeAt(index);
+          images = images;
+          _error = _error;
+          _enablePosting =
+              images.length > 0 ? true : _controller.text.isNotEmpty;
         },
-      ),
-    );
+      );
+      // Post _post = Post(message: _controller.text, images: images);
+      // _postVm.updatePost(_post);
+    }
   }
 }

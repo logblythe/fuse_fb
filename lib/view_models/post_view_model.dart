@@ -27,8 +27,9 @@ class PostViewModel extends BaseViewModel {
 
   void updatePost(Post updatedPost) {
     postService.updatePost(updatedPost);
-    navigationService.goBack();
   }
+
+  void goBack() => navigationService.goBack();
 
   @override
   void dispose() {

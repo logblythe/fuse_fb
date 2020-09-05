@@ -45,19 +45,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 stream: model.postsStream,
                 initialData: [],
                 builder: (context, snapshot) {
-                  List<Post> _posts = snapshot.data;
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return PostCard(
-                          post: _posts.elementAt(index),
-                          onPostSelect: () =>
-                              _handlePostSelect(_posts.elementAt(index)),
-                        );
-                      },
-                      childCount: _posts.length,
-                    ),
-                  );
+                  if (snapshot.hasData) {
+                    var data =snapshot.data;
+                    List<Post> _posts = data.reversed.toList();
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return PostCard(
+                            post: _posts.elementAt(index),
+                            onPostSelect: () =>
+                                _handlePostSelect(_posts.elementAt(index)),
+                          );
+                        },
+                        childCount: _posts.length,
+                      ),
+                    );
+                  }
+                  return Container();
                 },
               )
             ],
@@ -99,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _handleCreatePost() {
+    _postVm.selectPost(null);
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return AddPostScreen();
     }));

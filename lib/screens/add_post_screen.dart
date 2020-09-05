@@ -20,33 +20,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add post'),
-        actions: [
-          FlatButton(
-            child: Text(
-              "Post",
-              style: TextStyle(color: Colors.white),
-            ),
-            textColor: Colors.black,
-            disabledTextColor: Colors.red,
-            disabledColor: Colors.yellow,
-            onPressed: _enablePosting ? _handlePost : null,
-          ),
-        ],
-      ),
-      body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          loadAssets();
-        },
-      ),
-    );
-  }
-
-  Widget _buildBody() {
     return BaseWidget<PostViewModel>(
       model: PostViewModel(
         navigationService: Provider.of(context),
@@ -61,11 +34,34 @@ class _AddPostScreenState extends State<AddPostScreen> {
         }
       },
       builder: (context, model, child) {
-        return Column(
-          children: [
-            buildInput(),
-            Expanded(child: buildGridView()),
-          ],
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('${_editMode ? 'Edit' : 'Add'} post'),
+            actions: [
+              FlatButton(
+                child: Text(
+                  "Post",
+                  style: TextStyle(color: Colors.white),
+                ),
+                textColor: Colors.black,
+                disabledTextColor: Colors.red,
+                disabledColor: Colors.yellow,
+                onPressed: _enablePosting ? _handlePost : null,
+              ),
+            ],
+          ),
+          body: Column(
+            children: [
+              buildInput(),
+              Expanded(child: buildGridView()),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              loadAssets();
+            },
+          ),
         );
       },
     );
@@ -99,6 +95,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   Widget buildGridView() {
+    List<dynamic> _images = []
+      ..addAll(_postVm.selectedPost?.images?.toList() ?? [])
+      ..addAll(_postVm.selectedPost?.imageUrls?.toList() ?? [])
+      ..addAll(_postVm.selectedImages);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
       child: GridView.count(
@@ -106,25 +107,20 @@ class _AddPostScreenState extends State<AddPostScreen> {
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
         children: List.generate(
-          images.length,
+          _images.length,
           (index) {
-            Asset asset = images[index];
             return Stack(
               children: [
-                Container(
-                  color: Colors.red,
-                  padding: EdgeInsets.all(0),
-                  child: AssetThumb(
-                    spinner: Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+                _images[index] is String
+                    ? Image.network(_images[index])
+                    : AssetThumb(
+                        asset: _images[index],
+                        width: 300,
+                        height: 300,
+                        spinner: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       ),
-                    ),
-                    asset: asset,
-                    width: 300,
-                    height: 300,
-                  ),
-                ),
                 Positioned(
                   top: 0,
                   right: 0,
@@ -171,14 +167,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
     if (!mounted) return;
 
-    setState(
+    _postVm.addImages(resultList);
+    /* setState(
       () {
         images = resultList;
         _error = error;
         _enablePosting =
             resultList.length > 0 ? true : _controller.text.isNotEmpty;
       },
-    );
+    );*/
   }
 
   void _handlePost() {

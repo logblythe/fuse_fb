@@ -3,6 +3,7 @@ import 'package:fuse/models/post_model.dart';
 import 'package:fuse/services/navigation_service.dart';
 import 'package:fuse/services/post_service.dart';
 import 'package:fuse/view_models/base_view_model.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 class PostViewModel extends BaseViewModel {
   final PostService postService;
@@ -10,13 +11,18 @@ class PostViewModel extends BaseViewModel {
 
   PostViewModel({@required this.postService, @required this.navigationService});
 
+  List<Asset> _selectedImages = [];
+
   List<Post> get posts => postService.posts;
 
   Post get selectedPost => postService.selectedPost;
 
   Stream<List<Post>> get postsStream => postService.postStream;
 
+  List<Asset> get selectedImages => _selectedImages;
+
   void addPost(Post post) {
+    post.images = selectedImages;
     postService.addPost(post);
     navigationService.goBack();
   }
@@ -33,9 +39,14 @@ class PostViewModel extends BaseViewModel {
 
   void fetchQuotes() => postService.fetchQuotes();
 
-  @override
-  void dispose() {
-    postService.clearSelectedPost();
-    super.dispose();
+  addImages(List<Asset> assets) {
+    selectedImages.addAll(assets);
+    notifyListeners();
   }
+
+// @override
+// void dispose() {
+//   postService.clearSelectedPost();
+//   super.dispose();
+// }
 }

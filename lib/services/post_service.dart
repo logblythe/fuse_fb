@@ -12,7 +12,7 @@ class PostService {
 
   final StreamController _streamController = StreamController<List<Post>>();
 
-  List<Post> _posts;
+  List<Post> _posts=[];
   List<Quote> _quotes;
   Post _selectedPost;
 
@@ -21,6 +21,7 @@ class PostService {
   get selectedPost => _selectedPost;
 
   get postStream => _streamController.stream;
+
 
   fetchQuotes() {
     _apiService.get().then((value) {

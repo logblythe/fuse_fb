@@ -41,7 +41,10 @@ class _PostCardState extends State<PostCard> {
                             SizedBox(width: 24),
                             Text(
                               'John Doe',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .headline6,
                             ),
                           ],
                         ),
@@ -54,9 +57,21 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
                 Divider(color: Colors.grey, thickness: 2),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    widget.post.message ?? "",
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(fontSize: 16),
+                  ),
+                )
               ],
             ),
           ),
+          widget.post.images!=null && widget.post.images.length > 0 ?
           // SliverToBoxAdapter(
           //   child: Image.asset('assets/images/placeholder.png'),
           // ),
@@ -65,7 +80,7 @@ class _PostCardState extends State<PostCard> {
               crossAxisCount: 2,
             ),
             delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
+                  (BuildContext context, int index) {
                 return Container(
                     margin: EdgeInsets.all(16),
                     color: Colors.red,
@@ -73,7 +88,7 @@ class _PostCardState extends State<PostCard> {
               },
               childCount: 4,
             ),
-          ),
+          ):SliverToBoxAdapter(child: Container(),),
         ],
       ),
     );

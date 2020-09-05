@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fuse/base_widget.dart';
 import 'package:fuse/models/post_model.dart';
+import 'package:fuse/view_models/post_view_model.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:provider/provider.dart';
 
 class AddPostScreen extends StatefulWidget {
   @override
@@ -12,6 +15,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
   List<Asset> images = List<Asset>();
   String _error = 'No Error Detected';
   bool _enablePosting = false;
+  bool _editMode = false;
+  PostViewModel _postVm;
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +36,37 @@ class _AddPostScreenState extends State<AddPostScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          buildInput(),
-          Expanded(child: buildGridView()),
-        ],
-      ),
+      body: _buildBody(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
           loadAssets();
         },
       ),
+    );
+  }
+
+  Widget _buildBody() {
+    return BaseWidget<PostViewModel>(
+      model: PostViewModel(
+        navigationService: Provider.of(context),
+        postService: Provider.of(context),
+      ),
+      onModelReady: (model) {
+        _postVm = model;
+        _editMode = _postVm.selectedPost != null;
+        if (_editMode) {
+          _controller.text = _postVm.selectedPost.message;
+        }
+      },
+      builder: (context, model, child) {
+        return Column(
+          children: [
+            buildInput(),
+            Expanded(child: buildGridView()),
+          ],
+        );
+      },
     );
   }
 
@@ -107,6 +131,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void _handlePost() {
     Post _post = Post(message: _controller.text, images: images);
+    if (_editMode) {
+      _postVm.updatePost(_post);
+
+/*      if (_post != _postVm.selectedPost) {
+        _postVm.updatePost(_post);
+      }*/
+    } else {
+      _postVm.addPost(_post);
+    }
 
     // Navigator.pop(context);
   }

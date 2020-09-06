@@ -56,8 +56,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
+          floatingActionButton: FloatingActionButton.extended(
+            label: Text('Select Images'),
+            icon: Icon(Icons.add),
             onPressed: _loadAssets,
           ),
         );
@@ -119,7 +120,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   child: IconButton(
                     iconSize: 36,
                     icon: Icon(Icons.cancel),
-                    color: Colors.white,
+                    color: Colors.red,
                     onPressed: () => _handleRemoveAsset(index),
                   ),
                 )

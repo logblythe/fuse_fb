@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fuse/base_widget.dart';
+import 'package:fuse/ui/base_widget.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/view_models/post_view_model.dart';
 import 'package:fuse/ui/widgets/circle_image.dart';
@@ -142,7 +142,7 @@ class HomeScreen extends StatelessWidget {
       () {
         if (_scrollController.position.pixels ==
             _scrollController.position.maxScrollExtent) {
-          Future.delayed(Duration(seconds: 3))
+          Future.delayed(Duration(milliseconds:1500 ))
               .then((value) => model.loadPostFromCache());
         }
       },

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -86,7 +87,18 @@ class PostCard extends StatelessWidget {
       );
     } else if (_images.length == 1) {
       if (_images[0] is String) {
-        return SliverToBoxAdapter(child: Image.network(_images[0]));
+        return SliverToBoxAdapter(
+          child: CachedNetworkImage(
+            imageUrl: _images[0],
+            height: 300,
+            progressIndicatorBuilder: (ctx, url, progress) {
+              return Center(child: CircularProgressIndicator());
+            },
+            errorWidget: (context, url, error) {
+              return Icon(Icons.error);
+            },
+          ),
+        );
       } else {
         return SliverToBoxAdapter(
           child: AssetThumb(
@@ -113,7 +125,16 @@ class PostCard extends StatelessWidget {
               return Stack(
                 children: [
                   (_images[index] is String)
-                      ? Image.network(_images[index])
+                      ? CachedNetworkImage(
+                          imageUrl: _images[index],
+                          height: 200,
+                          progressIndicatorBuilder: (ctx, url, progress) {
+                            return Center(child: CircularProgressIndicator());
+                          },
+                          errorWidget: (context, url, error) {
+                            return Icon(Icons.error);
+                          },
+                        )
                       : AssetThumb(
                           height: 200,
                           width: 300,

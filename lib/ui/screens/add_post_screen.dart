@@ -1,7 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:fuse/base_widget.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/view_models/post_view_model.dart';
+import 'package:fuse/ui/base_widget.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -105,7 +106,16 @@ class _AddPostScreenState extends State<AddPostScreen> {
             return Stack(
               children: [
                 images[index] is String
-                    ? Image.network(images[index])
+                    ? CachedNetworkImage(
+                        imageUrl: images[index],
+                        height: 200,
+                        progressIndicatorBuilder: (ctx, url, progress) {
+                          return Center(child: CircularProgressIndicator());
+                        },
+                        errorWidget: (context, url, error) {
+                          return Icon(Icons.error);
+                        },
+                      )
                     : AssetThumb(
                         asset: images[index],
                         width: 300,

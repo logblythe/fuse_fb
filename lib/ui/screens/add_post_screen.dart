@@ -88,7 +88,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
             hintStyle: Theme.of(context).textTheme.headline6,
           ),
           onChanged: (value) {
-            if (value.isNotEmpty && value != _postVm.selectedPost.message) {
+            if (value.isNotEmpty && value.trim() != _postVm.selectedPost.message) {
               setState(() => _enablePosting = true);
             } else {
               setState(() {

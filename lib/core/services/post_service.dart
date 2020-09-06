@@ -39,11 +39,11 @@ class PostService {
               List<dynamic> imageUrls = [];
               if (index <= 8) {
                 for (int i = 0; i < index; i++) {
-                  imageUrls.add("https://picsum.photos/300");
+                  imageUrls.add("https://picsum.photos/1069");
                 }
               } else {
                 for (int i = 0; i < index % 4; i++) {
-                  imageUrls.add("https://picsum.photos/300");
+                  imageUrls.add("https://picsum.photos/1069");
                 }
               }
               return Post(message: quote.quote, imageList: imageUrls);

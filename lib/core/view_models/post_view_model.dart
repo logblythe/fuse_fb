@@ -43,7 +43,7 @@ class PostViewModel extends BaseViewModel {
 
   void fetchQuotes() => postService.fetchQuotes();
 
-  addSelectedImages(List<dynamic> assets) {
+  void addSelectedImages(List<dynamic> assets) {
     selectedImages.clear();
     selectedImages.addAll(assets);
     notifyListeners();

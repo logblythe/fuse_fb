@@ -81,13 +81,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
           ),
           onChanged: (value) {
             if (value.isEmpty && images.length == 0) {
-              setState(() {
-                _enablePosting = false;
-              });
+              setState(() => _enablePosting = false);
             } else {
-              setState(() {
-                _enablePosting = true;
-              });
+              setState(() => _enablePosting = true);
             }
           },
         ),
@@ -124,9 +120,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     iconSize: 36,
                     icon: Icon(Icons.cancel),
                     color: Colors.white,
-                    onPressed: () {
-                      _handleRemoveAsset(index);
-                    },
+                    onPressed: () => _handleRemoveAsset(index),
                   ),
                 )
               ],

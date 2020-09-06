@@ -102,7 +102,7 @@ class PostCard extends StatelessWidget {
       } else {
         return SliverToBoxAdapter(
           child: AssetThumb(
-            height: 200,
+            height: 300,
             width: 300,
             asset: _images[0],
             spinner: Center(
@@ -127,7 +127,7 @@ class PostCard extends StatelessWidget {
                   (_images[index] is String)
                       ? CachedNetworkImage(
                           imageUrl: _images[index],
-                          height: 200,
+                          height: 300,
                           progressIndicatorBuilder: (ctx, url, progress) {
                             return Center(child: CircularProgressIndicator());
                           },
@@ -136,7 +136,7 @@ class PostCard extends StatelessWidget {
                           },
                         )
                       : AssetThumb(
-                          height: 200,
+                          height: 300,
                           width: 300,
                           asset: _images[index],
                           spinner: Center(

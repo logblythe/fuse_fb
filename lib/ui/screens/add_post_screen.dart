@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/view_models/post_view_model.dart';
 import 'package:fuse/ui/base_widget.dart';
+import 'package:fuse/utils/utilities.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +14,10 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   final _controller = TextEditingController();
-  List<dynamic> images = List<dynamic>();
+  List<dynamic> _images = List<dynamic>();
+  List<dynamic> _imagesCopy = List<dynamic>();
   bool _enablePosting = false;
+  bool _enablePostingList = false;
   bool _editMode = false;
   PostViewModel _postVm;
 
@@ -29,12 +32,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _postVm = model;
         _postVm.onInit();
         _editMode = _postVm.selectedPost != null;
+        _imagesCopy = _postVm.selectedPost?.imageList;
         if (_editMode) {
-          _controller.text = _postVm.selectedPost.message;
+          _controller.text = _postVm.selectedPost?.message;
         }
       },
       builder: (context, model, child) {
-        images = _postVm.selectedImages;
+        _images = _postVm.selectedImages;
         return Scaffold(
           appBar: AppBar(
             title: Text('${_editMode ? 'Edit' : 'Add'} post'),
@@ -44,7 +48,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   '${_editMode ? "Update" : "Post"}',
                   style: TextStyle(color: Colors.white),
                 ),
-                onPressed: _enablePosting ? _handlePost : null,
+                onPressed:
+                    _enablePosting || _enablePostingList ? _handlePost : null,
               ),
             ],
           ),
@@ -73,6 +78,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         child: TextField(
+          textInputAction: TextInputAction.done,
           minLines: 5,
           maxLines: 10,
           controller: _controller,
@@ -82,10 +88,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
             hintStyle: Theme.of(context).textTheme.headline6,
           ),
           onChanged: (value) {
-            if (value.isEmpty && images.length == 0) {
-              setState(() => _enablePosting = false);
-            } else {
+            if (value.isNotEmpty && value != _postVm.selectedPost.message) {
               setState(() => _enablePosting = true);
+            } else {
+              setState(
+                  () => _enablePosting = _postVm.selectedImages.isNotEmpty);
             }
           },
         ),
@@ -101,13 +108,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
         children: List.generate(
-          images.length,
+          _images.length,
           (index) {
             return Stack(
               children: [
-                images[index] is String
+                _images[index] is String
                     ? CachedNetworkImage(
-                        imageUrl: images[index],
+                        imageUrl: _images[index],
                         height: 200,
                         progressIndicatorBuilder: (ctx, url, progress) {
                           return Center(child: CircularProgressIndicator());
@@ -117,7 +124,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         },
                       )
                     : AssetThumb(
-                        asset: images[index],
+                        asset: _images[index],
                         width: 300,
                         height: 300,
                         spinner: Center(
@@ -145,9 +152,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Future<void> _loadAssets() async {
     List<Asset> resultList = List<Asset>();
     List<Asset> pickedImages =
-        List.from(images.where((element) => element is Asset).toList());
+        List.from(_images.where((element) => element is Asset).toList());
     List<String> networkImages =
-        List.from(images.where((element) => element is String).toList());
+        List.from(_images.where((element) => element is String).toList());
     String error = 'No Error Detected';
 
     try {
@@ -172,12 +179,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
     if (!mounted) return;
     if (resultList.isNotEmpty) {
+      _images.addAll(resultList);
       _postVm.addSelectedImages([]..addAll(networkImages)..addAll(resultList));
+      setState(() {
+        _enablePostingList = true;
+      });
     }
-    setState(() {
-      _enablePosting =
-          resultList.length > 0 ? true : _controller.text.isNotEmpty;
-    });
   }
 
   void _handlePost() {
@@ -191,9 +198,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void _handleRemoveAsset(int index) {
+    _images.removeAt(index);
     _postVm.removeSelectedImage(index);
     setState(() {
-      _enablePosting = images.length > 0 ? true : _controller.text.isNotEmpty;
+      _enablePostingList = areListsEqual(_imagesCopy, _images)
+          ? _controller.text.isNotEmpty &&
+              _controller.text != _postVm.selectedPost.message
+          : true;
     });
   }
 }

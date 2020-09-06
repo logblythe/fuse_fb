@@ -36,9 +36,7 @@ class PostViewModel extends BaseViewModel {
 
   void updatePost(Post updatedPost) {
     updatedPost.imageList = selectedImages;
-    if (updatedPost != selectedPost) {
-      postService.updatePost(updatedPost);
-    }
+    postService.updatePost(updatedPost);
   }
 
   void fetchQuotes() => postService.fetchQuotes();

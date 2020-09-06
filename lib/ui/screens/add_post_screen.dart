@@ -32,7 +32,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _postVm = model;
         _postVm.onInit();
         _editMode = _postVm.selectedPost != null;
-        _imagesCopy = _postVm.selectedPost?.imageList;
+        _imagesCopy = _postVm.selectedPost?.imageList ?? [];
         if (_editMode) {
           _controller.text = _postVm.selectedPost?.message;
         }
@@ -91,8 +91,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
             if (value.isNotEmpty && value != _postVm.selectedPost.message) {
               setState(() => _enablePosting = true);
             } else {
-              setState(
-                  () => _enablePosting = _postVm.selectedImages.isNotEmpty);
+              setState(() {
+                _enablePosting = false;
+                _enablePostingList = _images.length > 0;
+              });
             }
           },
         ),
@@ -198,13 +200,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void _handleRemoveAsset(int index) {
-    _images.removeAt(index);
     _postVm.removeSelectedImage(index);
     setState(() {
-      _enablePostingList = areListsEqual(_imagesCopy, _images)
-          ? _controller.text.isNotEmpty &&
-              _controller.text != _postVm.selectedPost.message
-          : true;
+      _enablePostingList =
+          areListsEqual(_imagesCopy, _images) ? false : _images.length > 0;
     });
   }
 }

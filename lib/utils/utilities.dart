@@ -7,19 +7,24 @@ bool areListsEqual(var list1, var list2) {
     return false;
   }
 
+  bool equals = false;
   for (int i = 0; i < list1.length; i++) {
-    if (list1.runtimeType != list2.runtimeType) return false;
-    if (list1 is List<Asset>) {
+    if (list1[i].runtimeType != list2[i].runtimeType) {
+      equals = false;
+      break;
+    } else if (list1[i] is List<Asset>) {
       if (list1[i].identifier != list2[i].identifier) {
-        return false;
+        equals = false;
+        break;
       }
-    }
-    if (list1 is List<String>) {
+    } else if (list1[i] is List<String>) {
       if (list1[i] != list2[i]) {
-        return false;
+        equals = false;
+        break;
       }
+    } else {
+      equals = true;
     }
   }
-
-  return true;
+  return equals;
 }

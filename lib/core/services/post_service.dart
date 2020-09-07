@@ -27,7 +27,7 @@ class PostService {
   get postStream => _streamController.stream;
 
   fetchQuotes() {
-    _apiService.get().then((value) {
+    return _apiService.get().then((value) {
       _quotes = List.from(value.map((it) => Quote.fromJson(it)));
       _allPosts = _quotes
           .asMap()
@@ -39,11 +39,11 @@ class PostService {
               List<dynamic> imageUrls = [];
               if (index <= 8) {
                 for (int i = 0; i < index; i++) {
-                  imageUrls.add("https://picsum.photos/300");
+                  imageUrls.add(LOREM_URL);
                 }
               } else {
                 for (int i = 0; i < index % 4; i++) {
-                  imageUrls.add("https://picsum.photos/300");
+                  imageUrls.add(LOREM_URL);
                 }
               }
               return Post(message: quote.quote, imageList: imageUrls);

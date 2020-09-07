@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fuse/connectivity_mixin.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/view_models/post_view_model.dart';
 import 'package:fuse/ui/base_widget.dart';
@@ -8,13 +11,41 @@ import 'package:fuse/ui/widgets/post_card.dart';
 import 'package:fuse/utils/utilities.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
   final _scrollController = ScrollController();
+
+  _initListener(PostViewModel model) {
+    _scrollController.addListener(
+      () {
+        if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+          Future.delayed(Duration(milliseconds: 1500))
+              .then((value) => model.loadPostFromCache());
+        }
+      },
+    );
+  }
+
+  _initConnectivity(PostViewModel model) {
+    initializeConnectivity(onConnected: () {
+      model.internetConnection = true;
+    }, onDisconnected: () {
+      model.internetConnection = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('My Facebook')),
+      appBar: AppBar(
+        title: Text('My Facebook'),
+        centerTitle: true,
+      ),
       body: _body(context),
     );
   }
@@ -26,10 +57,11 @@ class HomeScreen extends StatelessWidget {
         postService: Provider.of(context),
       ),
       onModelReady: (model) {
-        model.fetchQuotes();
         _initListener(model);
+        _initConnectivity(model);
       },
       builder: (context, model, child) {
+        model.fetchQuotes();
         return Container(
           color: Colors.grey.withOpacity(0.2),
           padding: const EdgeInsets.all(12),
@@ -41,12 +73,16 @@ class HomeScreen extends StatelessWidget {
                 stream: model.postsStream,
                 initialData: [],
                 builder: (context, snapshot) {
-                  if (snapshot.data.isNotEmpty) {
-                    var data = snapshot.data;
-                    List<Post> _posts = data;
-                    return buildList(_posts, model);
+                  if (model.internetConnection) {
+                    if (snapshot.data.isNotEmpty) {
+                      var data = snapshot.data;
+                      List<Post> _posts = data;
+                      return buildList(_posts, model);
+                    } else {
+                      return buildLoading();
+                    }
                   } else {
-                    return buildLoading();
+                    return buildDisconnected(context);
                   }
                 },
               )
@@ -54,6 +90,20 @@ class HomeScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  SliverToBoxAdapter buildDisconnected(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            "No internet connection detected.\nPlease connect to internet and try again.",
+            style: Theme.of(context).textTheme.headline5,
+          ),
+        ),
+      ),
     );
   }
 
@@ -138,15 +188,9 @@ class HomeScreen extends StatelessWidget {
     model.navigateToEditPost();
   }
 
-  _initListener(PostViewModel model) {
-    _scrollController.addListener(
-      () {
-        if (_scrollController.position.pixels ==
-            _scrollController.position.maxScrollExtent) {
-          Future.delayed(Duration(milliseconds: 1500))
-              .then((value) => model.loadPostFromCache());
-        }
-      },
-    );
+  @override
+  void dispose() {
+    closeSubscription();
+    super.dispose();
   }
 }

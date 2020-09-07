@@ -34,6 +34,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text('Add post'),
+            centerTitle: true,
             actions: [
               FlatButton(
                 child: Text(

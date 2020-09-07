@@ -39,6 +39,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text('Edit post'),
+            centerTitle: true,
             actions: [
               FlatButton(
                 child: Text(

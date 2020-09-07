@@ -12,6 +12,7 @@ class PostViewModel extends BaseViewModel {
   PostViewModel({@required this.postService, @required this.navigationService});
 
   List<dynamic> _selectedImages = [];
+  bool _internetConnection = true;
 
   List<Post> get posts => postService.posts;
 
@@ -20,6 +21,13 @@ class PostViewModel extends BaseViewModel {
   Stream<List<Post>> get postsStream => postService.postStream;
 
   List<dynamic> get selectedImages => _selectedImages;
+
+  bool get internetConnection => _internetConnection;
+
+  set internetConnection(bool value) {
+    _internetConnection = value;
+    notifyListeners();
+  }
 
   onInit() {
     _selectedImages..addAll(selectedPost?.imageList ?? []);
@@ -38,7 +46,15 @@ class PostViewModel extends BaseViewModel {
     }
   }
 
-  void fetchQuotes() => postService.fetchQuotes();
+  void fetchQuotes() async {
+    if (posts.isEmpty && internetConnection) {
+      try {
+        await postService.fetchQuotes();
+      } catch (e) {
+        print("error fetching quotes ${e.toString()}");
+      }
+    }
+  }
 
   void addSelectedImages(List<dynamic> assets) {
     selectedImages.clear();

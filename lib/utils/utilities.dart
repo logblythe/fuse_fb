@@ -1,6 +1,8 @@
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 const int TOTAL_SIZE = 200;
+const String QUOTES_URL = "https://type.fit/api/quotes";
+const String LOREM_URL = "https://picsum.photos/300";
 
 bool areListsEqual(var list1, var list2) {
   if (!(list1 is List && list2 is List) || list1.length != list2.length) {

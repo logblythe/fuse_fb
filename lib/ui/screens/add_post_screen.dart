@@ -134,13 +134,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _enablePosting = true;
         _enablePostingList = _images.length > 0;
       });
-      print('inside if $_enablePosting $_enablePostingList');
     } else {
       setState(() {
         _enablePosting = false;
         _enablePostingList = _images.length > 0;
       });
-      print('inside else $_enablePosting $_enablePostingList');
     }
   }
 

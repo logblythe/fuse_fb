@@ -138,14 +138,12 @@ class _EditPostScreenState extends State<EditPostScreen> {
             !areListsEqual(_imagesCopy, _images) && _images.length > 0;
         _enablePosting = value.trim().isNotEmpty || _images.length > 0;
       });
-      print('inside if $_enablePosting $_enablePostingList');
     } else {
       setState(() {
         _enablePosting = false;
         _enablePostingList =
             !areListsEqual(_imagesCopy, _images) && _images.length > 0;
       });
-      print('inside else $_enablePosting $_enablePostingList');
     }
   }
 
@@ -156,17 +154,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
         _enablePosting = _controller.text.trim().isNotEmpty &&
             _controller.text.trim() != _postVm.selectedPost?.message;
       });
-      print('for list inside if $_enablePosting $_enablePostingList');
     } else {
       setState(() {
-        // _enablePostingList = true && _images.length > 0;
         _enablePosting = _controller.text.trim().isNotEmpty &&
             _controller.text.trim() != _postVm.selectedPost?.message;
         _enablePostingList = _controller.text.trim().isNotEmpty
             ? true
             : _images.length > 0 ? true : false; // _enablePostingList = true;
       });
-      print('for list inside else $_enablePosting $_enablePostingList');
     }
   }
 }

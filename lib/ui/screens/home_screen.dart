@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
       () {
         if (_scrollController.position.pixels ==
             _scrollController.position.maxScrollExtent) {
-          Future.delayed(Duration(milliseconds: 1500))
+          Future.delayed(Duration(milliseconds: 2000))
               .then((value) => model.loadPostFromCache());
         }
       },

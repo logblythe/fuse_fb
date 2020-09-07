@@ -95,7 +95,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     try {
       resultList = await MultiImagePicker.pickImages(
         maxImages: 300,
-        enableCamera: true,
+        enableCamera: false,
         selectedAssets: pickedImages,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
@@ -121,7 +121,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void _handlePost() {
-    Post _post = Post(message: _controller.text);
+    Post _post = Post(message: _controller.text.trimRight());
     _postVm.updatePost(_post);
     _postVm.goBack();
   }
@@ -132,11 +132,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void _updateEnabledStatusOnInputChange(value) {
-    if (value.trim() != _postVm.selectedPost?.message) {
+    if (value.trimRight() != _postVm.selectedPost?.message) {
       setState(() {
         _enablePostingList =
             !areListsEqual(_imagesCopy, _images) && _images.length > 0;
-        _enablePosting = value.trim().isNotEmpty || _images.length > 0;
+        _enablePosting = value.trimRight().isNotEmpty || _images.length > 0;
       });
     } else {
       setState(() {
@@ -151,14 +151,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
     if (areListsEqual(_imagesCopy, _images)) {
       setState(() {
         _enablePostingList = false;
-        _enablePosting = _controller.text.trim().isNotEmpty &&
-            _controller.text.trim() != _postVm.selectedPost?.message;
+        _enablePosting = _controller.text.trimRight().isNotEmpty &&
+            _controller.text.trimRight() != _postVm.selectedPost?.message;
       });
     } else {
       setState(() {
-        _enablePosting = _controller.text.trim().isNotEmpty &&
-            _controller.text.trim() != _postVm.selectedPost?.message;
-        _enablePostingList = _controller.text.trim().isNotEmpty
+        _enablePosting = _controller.text.trimRight().isNotEmpty &&
+            _controller.text.trimRight() != _postVm.selectedPost?.message;
+        _enablePostingList = _controller.text.trimRight().isNotEmpty
             ? true
             : _images.length > 0 ? true : false; // _enablePostingList = true;
       });

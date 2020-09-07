@@ -90,7 +90,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     try {
       resultList = await MultiImagePicker.pickImages(
         maxImages: 300,
-        enableCamera: true,
+        enableCamera: false,
         selectedAssets: pickedImages,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
@@ -118,7 +118,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void _handlePost() {
-    Post _post = Post(message: _controller.text);
+    Post _post = Post(message: _controller.text.trimRight());
     _postVm.addPost(_post);
     _postVm.goBack();
   }
@@ -129,7 +129,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void _updateEnabledStatusOnInputChange(value) {
-    if (value.trim().isNotEmpty) {
+    if (value.trimRight().isNotEmpty) {
       setState(() {
         _enablePosting = true;
         _enablePostingList = _images.length > 0;
@@ -146,12 +146,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
     if (_images.length > 0) {
       setState(() {
         _enablePostingList = true;
-        _enablePosting = _controller.text.trim().isNotEmpty;
+        _enablePosting = _controller.text.trimRight().isNotEmpty;
       });
     } else {
       setState(() {
         _enablePostingList = false;
-        _enablePosting = _controller.text.trim().isNotEmpty;
+        _enablePosting = _controller.text.trimRight().isNotEmpty;
       });
     }
   }

@@ -42,7 +42,7 @@ class PostService {
                   imageUrls.add(LOREM_URL);
                 }
               } else {
-                for (int i = 0; i < index % 4; i++) {
+                for (int i = 1; i <= index % 4; i++) {
                   imageUrls.add(LOREM_URL);
                 }
               }

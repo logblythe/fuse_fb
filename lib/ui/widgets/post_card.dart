@@ -88,25 +88,32 @@ class PostCard extends StatelessWidget {
     } else if (_images.length == 1) {
       if (_images[0] is String) {
         return SliverToBoxAdapter(
-          child: CachedNetworkImage(
-            imageUrl: _images[0],
-            height: 300,
-            progressIndicatorBuilder: (ctx, url, progress) {
-              return Center(child: CircularProgressIndicator());
-            },
-            errorWidget: (context, url, error) {
-              return Icon(Icons.error);
-            },
+          child: Container(
+            margin: const EdgeInsets.all(8),
+            child: CachedNetworkImage(
+              imageUrl: _images[0],
+              height: 300,
+              fit: BoxFit.fill,
+              progressIndicatorBuilder: (ctx, url, progress) {
+                return Center(child: CircularProgressIndicator());
+              },
+              errorWidget: (context, url, error) {
+                return Icon(Icons.error);
+              },
+            ),
           ),
         );
       } else {
         return SliverToBoxAdapter(
-          child: AssetThumb(
-            height: 300,
-            width: 300,
-            asset: _images[0],
-            spinner: Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
+          child: Container(
+            margin: const EdgeInsets.all(8),
+            child: AssetThumb(
+              height: 300,
+              width: 300,
+              asset: _images[0],
+              spinner: Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
             ),
           ),
         );

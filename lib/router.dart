@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fuse/ui/screens/add_post_screen.dart';
+import 'package:fuse/ui/screens/edit_post_screen.dart';
 import 'package:fuse/ui/screens/home_screen.dart';
 
 class RoutePaths {
   static const String HOME = "/home";
-  static const String POST_DETAILS = "/post-details";
+  static const String ADD_POST = "/add-post";
+  static const String EDIT_POST = "/edit-post";
 }
 
 class Router {
@@ -12,8 +14,10 @@ class Router {
     switch (settings.name) {
       case RoutePaths.HOME:
         return MaterialPageRoute(builder: (_) => HomeScreen());
-      case RoutePaths.POST_DETAILS:
+      case RoutePaths.ADD_POST:
         return MaterialPageRoute(builder: (_) => AddPostScreen());
+      case RoutePaths.EDIT_POST:
+        return MaterialPageRoute(builder: (_) => EditPostScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

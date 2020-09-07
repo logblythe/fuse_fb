@@ -29,10 +29,7 @@ class PostViewModel extends BaseViewModel {
     postService.addPost(post..imageList = selectedImages);
   }
 
-  void selectPost(Post post) {
-    postService.selectPost(post);
-    navigationService.navigateTo(RoutePaths.POST_DETAILS);
-  }
+  void selectPost(Post post) => postService.selectPost(post);
 
   void updatePost(Post updatedPost) {
     updatedPost.imageList = selectedImages;
@@ -54,7 +51,12 @@ class PostViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void goBack() => navigationService.goBack();
-
   void loadPostFromCache() => postService.loadPostFromCache();
+
+  void navigateToAddPost() => navigationService.navigateTo(RoutePaths.ADD_POST);
+
+  void navigateToEditPost() =>
+      navigationService.navigateTo(RoutePaths.EDIT_POST);
+
+  void goBack() => navigationService.goBack();
 }

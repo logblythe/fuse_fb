@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fuse/ui/base_widget.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/view_models/post_view_model.dart';
+import 'package:fuse/ui/base_widget.dart';
 import 'package:fuse/ui/widgets/circle_image.dart';
 import 'package:fuse/ui/widgets/post_card.dart';
 import 'package:fuse/utils/utilities.dart';
@@ -130,11 +130,12 @@ class HomeScreen extends StatelessWidget {
   }
 
   _handleCreatePost(PostViewModel model) {
-    model.selectPost(null);
+    model.navigateToAddPost();
   }
 
   _handlePostSelect(PostViewModel model, Post post) {
     model.selectPost(post);
+    model.navigateToEditPost();
   }
 
   _initListener(PostViewModel model) {
@@ -142,7 +143,7 @@ class HomeScreen extends StatelessWidget {
       () {
         if (_scrollController.position.pixels ==
             _scrollController.position.maxScrollExtent) {
-          Future.delayed(Duration(milliseconds:1500 ))
+          Future.delayed(Duration(milliseconds: 1500))
               .then((value) => model.loadPostFromCache());
         }
       },

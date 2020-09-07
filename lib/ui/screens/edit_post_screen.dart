@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:fuse/core/models/post_model.dart';
 import 'package:fuse/core/view_models/post_view_model.dart';
 import 'package:fuse/ui/base_widget.dart';
+import 'package:fuse/utils/utilities.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class AddPostScreen extends StatefulWidget {
+class EditPostScreen extends StatefulWidget {
   @override
-  _AddPostScreenState createState() => _AddPostScreenState();
+  _EditPostScreenState createState() => _EditPostScreenState();
 }
 
-class _AddPostScreenState extends State<AddPostScreen> {
-  List<dynamic> _images = List<dynamic>();
+class _EditPostScreenState extends State<EditPostScreen> {
   final _controller = TextEditingController();
+  List<dynamic> _images = List<dynamic>();
+  List<dynamic> _imagesCopy = List<dynamic>();
   bool _enablePosting = false;
   bool _enablePostingList = false;
   PostViewModel _postVm;
@@ -27,16 +29,19 @@ class _AddPostScreenState extends State<AddPostScreen> {
       ),
       onModelReady: (model) {
         _postVm = model;
+        _postVm.onInit();
+        _imagesCopy = _postVm.selectedPost?.imageList ?? [];
+        _controller.text = _postVm.selectedPost?.message;
       },
       builder: (context, model, child) {
         _images = _postVm.selectedImages;
         return Scaffold(
           appBar: AppBar(
-            title: Text('Add post'),
+            title: Text('Edit post'),
             actions: [
               FlatButton(
                 child: Text(
-                  'Post',
+                  'Update',
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed:
@@ -79,16 +84,18 @@ class _AddPostScreenState extends State<AddPostScreen> {
             hintStyle: Theme.of(context).textTheme.headline6,
           ),
           onChanged: (value) {
-            if (value.trim().isNotEmpty) {
+            if (value.trim() != _postVm.selectedPost?.message) {
               setState(() {
-                _enablePosting = true;
-                _enablePostingList = _images.length > 0;
+                _enablePostingList =
+                    !areListsEqual(_imagesCopy, _images) && _images.length > 0;
+                _enablePosting = value.trim().isNotEmpty || _images.length > 0;
               });
               print('inside if $_enablePosting $_enablePostingList');
             } else {
               setState(() {
                 _enablePosting = false;
-                _enablePostingList = _images.length > 0;
+                _enablePostingList =
+                    !areListsEqual(_imagesCopy, _images) && _images.length > 0;
               });
               print('inside else $_enablePosting $_enablePostingList');
             }
@@ -164,7 +171,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         materialOptions: MaterialOptions(
           actionBarColor: "#2196F3",
           statusBarColor: "#2196F3",
-          actionBarTitle: "Select images",
+          actionBarTitle: "Fuse",
           allViewTitle: "All Photos",
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
@@ -179,30 +186,53 @@ class _AddPostScreenState extends State<AddPostScreen> {
     if (resultList.isNotEmpty) {
       _images.addAll(resultList);
       _postVm.addSelectedImages([]..addAll(networkImages)..addAll(resultList));
-      setState(() {
-        _enablePostingList = true;
-      });
+      if (areListsEqual(_imagesCopy, _images)) {
+        setState(() {
+          _enablePostingList = false;
+          _enablePosting = _controller.text.trim().isNotEmpty &&
+              _controller.text.trim() != _postVm.selectedPost?.message;
+        });
+        print('for list inside if $_enablePosting $_enablePostingList');
+      } else {
+        setState(() {
+          // _enablePostingList = true && _images.length > 0;
+          _enablePosting = _controller.text.trim().isNotEmpty &&
+              _controller.text.trim() != _postVm.selectedPost?.message;
+          _enablePostingList = _controller.text.trim().isNotEmpty
+              ? true
+              : _images.length > 0 ? true : false;
+          // _enablePostingList = true;
+        });
+        print('for list inside else $_enablePosting $_enablePostingList');
+      }
     }
   }
 
   void _handlePost() {
     Post _post = Post(message: _controller.text);
-    _postVm.addPost(_post);
+    _postVm.updatePost(_post);
     _postVm.goBack();
   }
 
   void _handleRemoveAsset(int index) {
     _postVm.removeSelectedImage(index);
-    if (_images.length > 0) {
-      setState(() {
-        _enablePostingList = true;
-        _enablePosting = _controller.text.trim().isNotEmpty;
-      });
-    } else {
+    if (areListsEqual(_imagesCopy, _images)) {
       setState(() {
         _enablePostingList = false;
-        _enablePosting = _controller.text.trim().isNotEmpty;
+        _enablePosting = _controller.text.trim().isNotEmpty &&
+            _controller.text.trim() != _postVm.selectedPost?.message;
       });
+      print('for list inside if $_enablePosting $_enablePostingList');
+    } else {
+      setState(() {
+        // _enablePostingList = true && _images.length > 0;
+        _enablePosting = _controller.text.trim().isNotEmpty &&
+            _controller.text.trim() != _postVm.selectedPost?.message;
+        _enablePostingList = _controller.text.trim().isNotEmpty
+            ? true
+            : _images.length > 0 ? true : false; // _enablePostingList = true;
+      });
+      print('for list inside else $_enablePosting $_enablePostingList');
     }
   }
 }

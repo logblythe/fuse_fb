@@ -15,7 +15,7 @@ class PostService {
 
   List<Post> _allPosts = [];
   List<Post> _paginatedPosts = [];
-  List<Quote> _quotes;
+  List<Quote> _quotes = [];
   Post _selectedPost;
   int _startIndex = 0;
   int _lotSize = 50;

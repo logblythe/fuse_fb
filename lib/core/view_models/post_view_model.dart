@@ -12,7 +12,7 @@ class PostViewModel extends BaseViewModel {
   PostViewModel({@required this.postService, @required this.navigationService});
 
   List<dynamic> _selectedImages = [];
-  bool _internetConnection = true;
+  bool _internetConnection = false;
 
   List<Post> get posts => postService.posts;
 

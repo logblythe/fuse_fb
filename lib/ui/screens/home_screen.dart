@@ -73,7 +73,9 @@ class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
                 stream: model.postsStream,
                 initialData: [],
                 builder: (context, snapshot) {
-                  if (model.internetConnection) {
+                  if (!model.internetConnection) {
+                    return buildDisconnected(context);
+                  } else {
                     if (snapshot.data.isNotEmpty) {
                       var data = snapshot.data;
                       List<Post> _posts = data;
@@ -81,8 +83,6 @@ class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
                     } else {
                       return buildLoading();
                     }
-                  } else {
-                    return buildDisconnected(context);
                   }
                 },
               )
@@ -93,14 +93,14 @@ class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
     );
   }
 
-  SliverToBoxAdapter buildDisconnected(BuildContext context) {
+  Widget buildDisconnected(BuildContext context) {
     return SliverToBoxAdapter(
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
             "No internet connection detected.\nPlease connect to internet and try again.",
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headline6,
           ),
         ),
       ),
@@ -122,7 +122,8 @@ class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
           SizedBox(width: 24),
           Expanded(
             child: InkWell(
-              onTap: () => _handleCreatePost(model),
+              onTap: () =>
+                  model.internetConnection ? _handleCreatePost(model) : null,
               child: TextField(
                 enabled: false,
                 decoration: InputDecoration(
@@ -150,13 +151,7 @@ class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
                     _handlePostSelect(model, posts.elementAt(index)),
               ),
               index == posts.length - 1
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: index == TOTAL_SIZE - 1
-                          ? Text(
-                              "Reached end of the list i.e $TOTAL_SIZE items")
-                          : CircularProgressIndicator(),
-                    )
+                  ? buildLoadMore(index, context)
                   : Container(),
             ],
           );
@@ -176,6 +171,26 @@ class _HomeScreenState extends State<HomeScreen> with ConnectivityMixin {
           Center(child: Text('Please wait, fetching the posts')),
         ],
       ),
+    );
+  }
+
+  Padding buildLoadMore(int index, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: index == TOTAL_SIZE - 1
+          ? Text(
+              "Reached end of the list i.e $TOTAL_SIZE items",
+            )
+          : Column(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 12),
+                Text(
+                  "Load more...",
+                  style: Theme.of(context).textTheme.caption,
+                )
+              ],
+            ),
     );
   }
 

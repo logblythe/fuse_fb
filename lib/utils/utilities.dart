@@ -8,7 +8,9 @@ bool areListsEqual(var list1, var list2) {
   if (!(list1 is List && list2 is List) || list1.length != list2.length) {
     return false;
   }
-
+  if (list1.length == 0 && list2.length == 0) {
+    return true;
+  }
   bool equals = false;
   for (var i in list1) {
     for (var j in list2) {
